@@ -1,7 +1,6 @@
 #--------------------------------------------------Imports------------------------------------------------------
 from flask import Flask, render_template, redirect, url_for,request,flash,abort
 from functools import wraps
-from flask_gravatar import Gravatar
 from flask_bootstrap import Bootstrap4
 from flask_sqlalchemy import SQLAlchemy
 from flask_ckeditor import CKEditor
@@ -11,22 +10,19 @@ from flask_login import UserMixin, login_user, LoginManager,current_user, logout
 from forms import CreatePostForm,RegisterUserForm,LoginUserForm,DeleteForm,CommentsForm
 import os
 import random
-from dotenv import load_dotenv
 
 
 #--------------------------------------------------Initialization------------------------------------------------------
 app = Flask(__name__)
-app.config['SQLALCHEMY_DATABASE_URI'] = os.environ.get("DATABASE_URL1")
+app.config['SQLALCHEMY_DATABASE_URI'] = "sqlite:///posts2.db"
 ckeditor = CKEditor(app)
 bootstrap = Bootstrap4(app)
 db = SQLAlchemy(app)
 app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
 login_manager = LoginManager()
 login_manager.init_app(app)
-load_dotenv("C:/Users/ACA$H/Desktop/CONFIDENTIAL/EnvironmentVariables/.env")
 # Secret Things 
-app.secret_key = os.environ.get("secret_key")
-gravatar = Gravatar(app,size=100,rating='g',default='retro',force_default=False,force_lower=False,use_ssl=False,base_url=None)
+app.secret_key = "aygwedtqawueiquwy8722"
 
 
 
@@ -68,7 +64,7 @@ def admin_only(f):
 #--------------------------------------------------Main Routes------------------------------------------------------
 @app.route("/")
 def home():
-    # db.create_all()
+    db.create_all()
     data=db.session.query(BlogPost).order_by(BlogPost.id.desc())
     print(data)
     return render_template("index.html",blog_data=data,logged_in=current_user.is_authenticated)
@@ -270,6 +266,6 @@ def open_contact_page():
         return render_template("contact.html", message="Successfully sent your message.",logged_in=current_user.is_authenticated)
     return render_template("contact.html", message="Contact Akash!",logged_in=current_user.is_authenticated)
 if __name__=="__main__":
-    app.run()
+    app.run(debug=True)
 # if __name__=="__main__":
 #     app.run(debug=True)
